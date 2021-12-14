@@ -18,9 +18,18 @@ function razzo_foreach(array,a,b) {
     return new_array;
 }
 function razzo_filter(array,a,b) {
-    return array.filter((element,index) => {
+    const this_array = array.filter((element,index) => {
         return (index >= a && index <= b);
     });
+    const container = document.querySelector('.container');
+    this_array.forEach((element,index) => {
+        container.innerHTML+= `
+        <div>
+            ${index} :${element}
+        </div>
+        `;
+    });
+    return this_array;
 }
 function showValues(array,a,b) {
     console.log(razzo_foreach(array, a, b));
@@ -31,44 +40,59 @@ let a = document.getElementById('insert_a');
 let b = document.getElementById('insert_b');
 const submit = document.getElementById('submit');
 
-function check (a,b) {
+function check(a, b) {
+    submit.disabled = true;
     const errorInputDiv = document.querySelector('.error-input');
-    const errorInputStrong = '<strong style="color:red;">Inserisci entrambi gli estremi estremi!</strong>';
-    if(a.value != '') {
-        if(b.value != '') {
-            submit.disabled = false;
-            // console.log('if: ',submit.disabled);
-            errorInputDiv.innerHTML = '';
-        } else {
-            submit.disabled = true;
-            // console.log('else1: ',submit.disabled);
-            errorInputDiv.innerHTML = errorInputStrong;
-        }
+    const errorInput = '<strong style="color:red;">Inserisci entrambi gli estremi estremi!</strong>';
+    const errorInputA = "<strong style= color:red;'' >Inserisci l'estremo a!</strong>";
+    const errorInputB = "<strong style= color:red;'' >Inserisci l'estremo b!</strong>";
+
+    (a.value == '' && b.value == '') ? errorInputDiv.innerHTML = errorInput : 
+        (a.value == '') ? errorInputDiv.innerHTML = errorInputA  :
+            (b.value == '') ? errorInputDiv.innerHTML = errorInputB :
+                submit.disabled = false;
+                errorInputDiv.innerHTML = '';
+    if (a.value == '' && b.value == '') {
+        errorInputDiv.innerHTML = errorInput;
+    } else if(a.value == '') {
+        errorInputDiv.innerHTML = errorInputA;
+    } else if(b.value == '') {
+        errorInputDiv.innerHTML = errorInputB;
     } else {
-        submit.disabled = true;
-        // console.log('else2: ',submit.disabled);
-        errorInputDiv.innerHTML = errorInputStrong;
+        submit.disabled = false;
+        errorInputDiv.innerHTML = '';
     }
 }
 
-b.addEventListener('change',function() {
-    a = document.getElementById('insert_a');
-    b = document.getElementById('insert_b');
-    // (b.value == '') ? submit.disabled = false : firstCondition;
-    check(a,b);
-});
+
+function insertAB() {
+    return [document.getElementById('insert_a'), document.getElementById('insert_b')];
+}
 
 a.addEventListener('change',function () {
-    a = document.getElementById('insert_a');
-    b = document.getElementById('insert_b');
-    // (a.value == '') ? submit.disabled = false : secondCondition ;
-    check(a,b);
+    [a,b,] = insertAB();
+    (a > b) ? check(b,a) : check(a,b);
+});
+b.addEventListener('change',function() {
+    [a,b,] = insertAB();
+    (a > b) ? check(b,a) : check(a,b);
+    // check(a,b);
+});
+a.addEventListener('focus',function () {
+    [a,b,] = insertAB();
+    (a > b) ? check(b,a) : check(a,b);
+    // check(a,b);
+});
+b.addEventListener('focus',function() {
+    [a,b,] = insertAB();
+    (a > b) ? check(b,a) : check(a,b);
+    // check(a,b);
 });
 
 submit.addEventListener('click',function(event) {
     event.preventDefault();
-    a = document.getElementById('insert_a');
-    b = document.getElementById('insert_b');
+    [a, b,] = insertAB();    
     console.log('a: ',a,'b: ',b);
+    // const container = document.querySelector('.container');
     showValues(my_array, a.value, b.value);
 });
